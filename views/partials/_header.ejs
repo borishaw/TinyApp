@@ -1,3 +1,14 @@
 <header>
-    This is some header for Tiny App
+    <% if (username) {%>
+    <h1>Hello, <%= username%></h1>
+    <form action="/logout" method="post">
+        <button type="submit">Logout</button>
+    </form>
+    <%  } else {%>
+    <form action="/login" method="post">
+        <label for="username">Username: </label>
+        <input id="username" type="text" name="username">
+        <button type="submit">Login</button>
+    </form>
+    <% }%>
 </header>
