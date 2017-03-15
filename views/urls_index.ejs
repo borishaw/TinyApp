@@ -8,7 +8,14 @@
 <h1>List of Short URLs</h1>
 <ul>
     <% for (let key in urls ) { %>
-    <li><a href="urls/<%= key%>"><%= key%></a></li>
+    <li>
+        <%= key%>
+        <a href="/urls/<%= key%>">Edit</a>
+        <form method="POST" action="/urls/<%= key%>/delete">
+            <input type="hidden" name="id" value="<%= key%>">
+            <button type="submit">Delete</button>
+        </form>
+    </li>
     <% } %>
 </ul>
 </body>

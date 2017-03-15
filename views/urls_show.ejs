@@ -7,7 +7,13 @@
 <%- include('partials/_header') %>
 <ul>
     <li>Full URL: <a href="<%= fullURL %>"><%= fullURL %></a></li>
-    <li>Shortened Form: <%= shortURL %></li>
+    <li>Shortened URL: <%= shortURL %></li>
+    <li>
+        <form action="/urls/<%= shortURL%>" method="post">
+            <input type="text" name="fullURL" value="<%= fullURL %>">
+            <button type="submit">Update</button>
+        </form>
+    </li>
 </ul>
 </body>
 </html>
