@@ -14,6 +14,24 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  },
+  "user3RanomID": {
+    id: "user3RanomID",
+    email: "borishaw@gmail.com",
+    password: "password"
+  }
+};
+
 function generateRandomString () {
   "use strict";
   return randomString.generate(6);
@@ -21,11 +39,15 @@ function generateRandomString () {
 
 
 app.get("/", (req, res) => {
-  let templateVars = {
-    urls: urlDatabase,
-    username: req.cookies["username"]
-  };
+
+  let templateVars = {urls: urlDatabase};
+  if (req.cookies['user_id']){
+    let user_id = req.cookies['user_id'];
+    templateVars['user'] = users[user_id];
+  }
+
   res.render("urls_index", templateVars);
+
 });
 
 app.get("/urls.json", (req, res) => {
@@ -33,14 +55,20 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new" ,{username: req.cookies["username"]});
+  let user_id = req.cookies['user_id'];
+  let user = users[user_id];
+  res.render("urls_new" ,{user: user});
+});
+
+app.get("/register", (req, res) => {
+  "use strict";
+  res.render("register");
 });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
-    fullURL: urlDatabase[req.params.id],
-    username: req.cookies["username"]
+    fullURL: urlDatabase[req.params.id]
   };
   res.render("urls_show", templateVars);
 });
@@ -50,11 +78,16 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/login", (req, res) => {
+  "use strict";
+  res.render("login");
+});
+
 app.post("/urls", (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters
   let shortUrl = generateRandomString();
   urlDatabase[shortUrl] = req.body.longURL;
-  res.redirect(`/urls/${shortUrl}`);         // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortUrl}`);
 });
 
 app.post("/urls/:id", (req, res) => {
@@ -74,17 +107,67 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/login", (req, res) => {
   "use strict";
-  let userName = req.body.username;
-  res.cookie("username", userName);
-  res.redirect("/");
+  let email = req.body.email;
+  let password = req.body.password;
+  let verified = false;
+  let user_id = '';
+  let user = {};
+
+  for (let key in users){
+    if (users[key].email === email){
+      if (users[key].password === password){
+        user_id = key;
+        user = users[user_id];
+        verified = true;
+        break;
+      }
+    }
+  }
+
+  return verified ? res.cookie("user_id", user_id).redirect("/") : res.status(403).send("Failed to authenticate");
+
+  // if (verified){
+  //   res.cookie("user_id", user_id).redirect("/");
+  //   //res.redirect("/");
+  // } else {
+  //   res.status(403).send("Failed to authenticate");
+  // }
+
 });
 
 app.post("/logout", (req, res) => {
   "use strict";
-  res.clearCookie("username");
-  res.redirect("/");
+  res.clearCookie("user_id").redirect("/");
+});
+
+app.post("/register", (req, res) => {
+  "use strict";
+  let user_id = generateRandomString();
+  let user = {
+    id: user_id,
+    email: req.body.email,
+    password: req.body.password
+  }
+
+  console.log(users);
+
+  //Check if email and password fields are empty
+  if (!req.body.email || !req.body.password){
+    res.status(400).send("Please enter an email and a password");
+  };
+
+  //Check if email entered already exists
+  for (let key in users){
+    if (users[key].email === req.body.email){
+      res.status(400).send("Email address already exists");
+      break;
+    }
+  }
+
+  users[user_id] = user;
+  res.cookie("user_id", user_id).redirect("/");
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Tiny App is listening on port ${PORT}!`);
 });

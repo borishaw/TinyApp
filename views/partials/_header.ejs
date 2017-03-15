@@ -1,14 +1,11 @@
 <header>
-    <% if (username) {%>
-    <h1>Hello, <%= username%></h1>
+    <% if (typeof user !== 'undefined') {%>
+    <h1>Hello, <%= user.email%></h1>
     <form action="/logout" method="post">
         <button type="submit">Logout</button>
     </form>
     <%  } else {%>
-    <form action="/login" method="post">
-        <label for="username">Username: </label>
-        <input id="username" type="text" name="username">
-        <button type="submit">Login</button>
-    </form>
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
     <% }%>
 </header>
