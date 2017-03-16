@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const randomString = require("randomstring");
 const cookieParser = require('cookie-parser');
 const filterValues = require('filter-values');
+const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -27,17 +28,17 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: "$2a$10$RhMwQa3CE8.3mW.DapIfSeCLzKSmuv4LOQdU0iaegZjhazgYyw9hq"
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: "$2a$10$mm6p4fvvYXgaU4F3aAwqROgI7l49j6z6Tnh0FVenn6fjRgr5./AzG"
   },
   "user3RanomID": {
     id: "user3RanomID",
     email: "borishaw@gmail.com",
-    password: "password"
+    password: "$2a$10$/qRNh5JZTnDBC90/572aYeMwp7yomFr1mH.KHOyN1GGRUmpua2fem"
   }
 };
 
@@ -145,7 +146,7 @@ app.post("/login", (req, res) => {
 
   for (let key in users){
     if (users[key].email === email){
-      if (users[key].password === password){
+      if (bcrypt.compareSync(password, users[key].password)){
         user_id = key;
         user = users[user_id];
         verified = true;
@@ -176,10 +177,8 @@ app.post("/register", (req, res) => {
   let user = {
     id: user_id,
     email: req.body.email,
-    password: req.body.password
+    password: bcrypt.hashSync(req.body.password, 10)
   }
-
-  console.log(users);
 
   //Check if email and password fields are empty
   if (!req.body.email || !req.body.password){
@@ -195,6 +194,7 @@ app.post("/register", (req, res) => {
   }
 
   users[user_id] = user;
+  console.log(users);
   res.cookie("user_id", user_id).redirect("/");
 });
 
