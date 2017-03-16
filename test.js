@@ -1,21 +1,20 @@
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  print: function () {
-    "use strict";
-    console.log(this.b2xVn2);
+const filter = require('filter-values');
+
+let urlDatabase = {
+  "b2xVn2": {
+    id: "b2xVn2",
+    url: "http://www.lighthouselabs.ca",
+    userID: "user2RanomID"
+  },
+  "9sm5xK": {
+    id: "9sm5xK",
+    url: "http://www.google.com",
+    userID: "user3RanomID"
   }
 };
 
-urlDatabase['dhw4if'] = "http://www.facebook.com";
+let filteredResult = filter(urlDatabase, function (value, key, obj) {
+  return value.userID === "user3RanomID";
+});
 
-function counter() {
-  this.age = 0;
-
-  setInterval(() => {
-    this.age += 1;
-    console.log(this.age);
-  }, 1000);
-}
-
-console.log(urlDatabase.print());
+console.log(filteredResult);
