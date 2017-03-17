@@ -6,25 +6,34 @@
 <body>
 <%- include('partials/_header') %>
 <h1>List of Short URLs</h1>
-<ul>
+<table border="1px">
+    <tr>
+        <th>Short url</th>
+        <th>Long url</th>
+        <th>Edit</th>
+        <th>Delete</th>
+        <th>Date Created</th>
+        <th>Number of visit</th>
+        <th>Number of unique visit</th>
+    </tr>
     <% if (typeof user !== "undefined") { %>
-        <% for (let key in urls ) { %>
-        <li>
-            <a href="/u/<%= key %>"><%= key %></a>
-            <a href="/urls/<%= key %>">Edit</a>
-            <form method="POST" action="/urls/<%= key %>/delete">
-                <input type="hidden" name="id" value="<%= key %>">
+    <% for (let key in urls ) { %>
+    <tr>
+        <td><%= key %></td>
+        <td><%= urls[key].url%></td>
+        <td>
+            <form action="/urls/<%= key %>">
+                <button type="submit">Edit</button>
+            </form>
+        </td>
+        <td>
+            <form action="/urls/<%= key %>/delete" method="post">
                 <button type="submit">Delete</button>
             </form>
-        </li>
-        <% } %>
-    <% } else { %>
-    <% for (let key in urls ) { %>
-    <li>
-        <a href="/u/<%= key %>"><%= key %></a>
-    </li>
-    <% } %>
-        <% }%>
-</ul>
+        </td>
+    </tr>
+    <% }%>
+    <% }%>
+</table>
 </body>
 </html>
